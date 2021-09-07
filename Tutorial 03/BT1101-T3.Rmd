@@ -1,0 +1,527 @@
+---
+title: "BT1101-Tutorial 3 (Due 13/9 8am)"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+## Introduction to R Markdown
+
+R Markdown, is an extremely useful tool that professional data scientists and business analysts use in their day-to-day work.
+
+You can open R Markdown documents in RStudio as well. You should see a little command called "Knit", which allows you to "knit" the entire R Markdown file into a HTML document, or a PDF document, or a MS Word Document (note, for MS Word, you'll need MS Word installed on your system; for PDF, you need to have Tex/Latex distribution installed).
+
+R Markdown is nice to use simply because it allows you to embed both code and write-up into the same document, and it produces presentable output, so you can use it to generate reports from your homework, and, when you eventually go out to work in a company, for your projects.
+
+Here's how you embed a "chunk" of R code.
+
+```{r example-chunk, echo=TRUE}
+1+1
+```
+
+After the three apostrophes, you'll need `r`, then you can give the chunk a name. Please note that **CHUNK NAMES HAVE TO BE A SINGLE-WORD, NO SPACE ALLOWED**. Also, names have to be unique, that is, every chunk needs a **different** name (this has led to rendering failures in previous final exams). You can give chunks names like:
+
+- `chunk1`
+- `read-in-data`
+- `run-regression`
+
+or, what will help you with homework:
+
+- `load-library`
+- `q1.(a)` etc
+
+These names are for you to help organize your code. (In practice it will be very useful when you have files with thousands of lines of code...). After the name of the chunk, you can give it certain options, separated by commas. I will highlight one important option. 
+
+- `echo=TRUE` means the code chunk will be copied into the output file. For homework purposes, **ALWAYS** set `echo=TRUE` so we know what code you wrote. When you go out to work in a company and you want to produce nice looking reports, feel free to set it to FALSE.
+
+
+There is a lot to syntax to learn using the R Markdown, but we don't need you to be an expert in R Markdown (although we do expect proficiency in R!). Hopefully, you can copy all the R Markdown syntax you need from the templates we provide. 
+
+
+Note about *working directories* in R Markdown. If you do not specify your working directory via `setwd('...')`, and you hit `Knit`, the document will assume that the working directory is the directory that the `.rmd` file is in. Thus, if your rmd is in `XYZ/folder1/code.rmd` and your dataset is `XYZ/folder1/data.csv`, then you can simply run `d0 <- read.csv('data.csv')` without running `setwd()`.
+
+
+## Submission Instructions
+
+- Select `output: html_document`.
+- We would recommend that you play with the PDF file using pdf_document for your own benefit. We only require `html` format for assignments and exam.
+- Include all code chunks, so include `echo=TRUE` in all chunks.
+- Replace the placeholder text, "Type your answer here.", with the answer of your own.  (This is usually the descriptive and explanation part of your answer)
+- Submit *only* the required question for grading (Question 2: Submission). You can delete everything else for that submission. Remember to include any `library('package_name')` statements that you'll need to run your code and future reproduction. 
+- Rename your R Markdown file `T[X]_[MatricNumber].rmd`, and the output will automatically be `T[X]_[MatricNumber].html`. 
+    - for example, `T3_12345.html`
+    - X is the Tutorial number at the top of this file. For example, this file is for "T3".
+- Submit both R Markdown file (.rmd) and HTML (.html) to Luminus for tutorial assignments (upload to Luminus under the correct Submission Folder). We shall do the same for the exam.
+- **It is important to be able to code and produce your Rmarkdown output file *independently*.** You are responsible for de-bugging and programming in the exam.
+
+## Preparation
+
+## Tutorial 3
+
+```{r load-libraries, echo=TRUE}
+# load required packages
+# library("xxxx")
+
+#install.packages("dplyr") #only need to run this code once to install the package
+library("dplyr") #need to call the libary before you use the package
+#install.packages("tidyr")
+library("tidyr")
+library("rpivotTable")
+library("knitr")
+```
+
+### Tutorial 3 Question 1
+
+- Dataset required: `Bank Credit Risk Data.xlsx`
+
+The worksheet Base Data in the Excel file Bank Credit Risk Data provides information about 425 bank customers who had applied for loans. Each of the column is defined as follows: 
+
+- `Loan Purpose` : Type of purpose for the loan applied
+- `Checking` : Checking account balance
+- `Savings` :  Savings account balance
+- `Months Customer`: Number of months has been a customer of the bank
+- `Months Employed`: Number of months in employment
+- `Gender`: Gender
+- `Marital Status`: Marital status 
+- `Age`: Age in years
+- `Housing`: Housing type
+- `Years`: Number of years at current residence
+- `Job`: Job type
+- `Credit Risk`: Credit-risk classification by the bank
+
+```{r q1-read-dataset, echo=TRUE}
+#put in your working directory folder path name 
+#import excel file into RStudio
+library(readxl)
+BD = read_excel("~/Desktop/专业技能模块/计算机专业技能/学校课程/BT1101 Introduction to Business Analytics/Hands-on Coaching/Course-BT1101-IntroBA/Data/Bank Credit Risk Data.xlsx", skip = 1)
+View(BD)
+```
+<p>
+**You will continue to build on the dashboards that we have started in lecture 3.**
+</p>
+
+### Q1.(a) Customer Profile Dashboard 
+The credit risk analyst would like to have a better understanding of the bank's loan customer through this Customer Profile Dashboard. In particular, he has the following requirements for the Customer Profile Dashboard: 
+
+- i. To be able to view the frequency distributions for each of the following customer demographic variables in a chart and table: `Housing`, `Job`, `Credit Risk`, `Months Employed` and `Total`. `Total` is the sum of `Checking` and `Savings`. (hint: You will need to create the variable `Total` in the dataframe)  
+- ii. To view the relationship between `Total` and `Months Employed` as well as `Total` and `Age` in two separate charts.
+- iii. To provide a description of any interesting patterns observed from the charts. (You may type your answer in the space below)
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+Question 1 (a)(i)(0)
+```{r q1.(a)(i), echo=TRUE}
+## Type your codes here
+# (i)
+BD$Total = BD$Checking + BD$Savings # method 1
+BD %>% mutate(Total = `Checking` + `Savings`) # method 2
+```
+
+
+Question 1 (a)(i)(1) Housing Variable - Pie Chart
+```{r q1(a)(ii)(1), echo=TRUE}
+
+# 用表格呈现
+HouseFreq = BD %>% count(`Housing`, name = "Frequency of Bank Customers by Housing")
+kable(HouseFreq, caption = "FREQUENCY")
+
+# 用pie chart呈现
+HouseFreqNumbers = HouseFreq$`Frequency of Bank Customers by Housing`
+HousePercentages = 100*round(HouseFreq$`Frequency of Bank Customers by Housing`/sum(HouseFreq$`Frequency of Bank Customers by Housing`),4)
+
+label = HouseFreq$Housing
+label = paste(label, ",", sep = "")
+label = paste(label, HousePercentages, sep = " ")
+label = paste(label, "%", sep = "")
+
+# 制作label的方法2,3,4：
+label2 = HouseFreq$Housing %>% paste(",", sep = "") %>% paste(HousePercentages) %>% paste("%", sep="")
+label3 = paste(HouseFreq$Housing, ",", " ", HousePercentages, "%", sep="")
+label4 = glue :: glue("{HouseFreq$Housing}, {HousePercentages}%")
+
+pie(HouseFreqNumbers,
+    labels = label,
+    col = c("lightgreen","lightblue","lightpink"),
+    radius = 1,
+    main = "Customer Housing Type"
+    )
+```
+
+
+Question 1 (a)(i)(2) Credit Risk Variable - Pie Chart
+```{r q1(a)(ii)(2), echo=TRUE}
+CRFreq = BD %>% count(`Credit Risk`, name = "Frequency of Bank Customers by Credit Risk")
+
+CRFreqNumbers = CRFreq$`Frequency of Bank Customers by Credit Risk`
+CRFreqPercentages = 100*round(CRFreq$`Frequency of Bank Customers by Credit Risk`/sum(CRFreq$`Frequency of Bank Customers by Credit Risk`), 4)
+
+label = CRFreq$`Credit Risk`
+label = paste(label, ",", sep = "")
+label = paste(label, CRFreqPercentages, sep = " ")
+label = paste(label, "%", sep = "")
+
+pie(CRFreqNumbers,
+    labels = label,
+    col = c("lightgreen","lightblue"),
+    radius = 1,
+    main = "Credit Risk Type"
+    )
+```
+
+Question 1 (a)(i)(3) Job Variable - Bar Chart
+
+```{r q1(a)(ii)(3), echo=TRUE}
+# 制作频数dataframe
+JobFreq = BD %>% count(`Job`, name = "Frequency of Jobs") #方法1
+
+JobFreq2 = data.frame(table(BD$Job))
+names(JobFreq2) = c("Job","Frequency of Jobs") #方法2
+
+# 柱状图
+barplot(JobFreq$`Frequency of Jobs`,
+        names.arg = JobFreq$Job, #柱子的名字
+        main = "Frequency of Bank Customers by Job",
+        horiz = TRUE,
+        xlim = c(0, 1.2*max(JobFreq$`Frequency of Jobs`)),
+        xlab = "Number of Customers",
+        las = 1,
+        cex.names = 0.6,
+        cex.axis = 0.6,
+        col = c("lightblue","lightgreen","lightyellow","lightpink")
+        )
+
+# 柱状图2
+barplot(JobFreq$`Frequency of Jobs`,
+        names.arg = JobFreq$Job, #柱子的名字
+        main = "Frequency of Bank Customers by Job",
+        horiz = FALSE,
+        ylim = c(0, 1.2*max(JobFreq$`Frequency of Jobs`)),
+        ylab = "Number of Customers",
+        las = 1,
+        cex.names = 1,
+        cex.axis = 0.8,
+        col = c("lightblue","lightgreen","lightyellow","lightpink")
+        )
+
+```
+
+Question 1 (a)(i)(4) Months Employed - Histogram
+
+直方图的处理是非常方便的！直接把这个向量丢给函数即可自动画好。但是我们自己没有掌握各个区间的频数。
+我们可以extract频数表frequency table from 直方图。
+得到的直方图可以用$符号提取出很多的信息
+```{r q1(a)(ii)(4), echo=TRUE}
+
+histogram = hist(BD$`Months Employed`,
+              main = "Histogram of Customer Months Employed",
+              xlab = "Customer Months Employed",
+              ylab = "Number of Customers",
+              ylim = c(0, 180),
+              col = rainbow(12),
+              labels = TRUE
+              )
+
+
+#可以提取出非常多的信息
+histogram$breaks
+histogram$counts
+histogram$density
+histogram$mids
+
+#画出频数表
+intervals = paste(histogram$breaks[1:length(histogram$breaks)-1],"-",histogram$breaks[2:length(histogram$breaks)],
+                  sep="")
+MonthsEmployedFreq = data.frame(Interval = intervals, Frequency = histogram$counts)
+
+
+```
+
+Question 1 (a)(i)(5) Total Account Balance - Histogram
+
+```{r q1 (a)(ii)(5), echo=TRUE}
+
+TotalHist = hist(BD$Total,
+                 main = "Histogram of Customer Total Account Balance",
+                 xlab = "Total Account Balance",
+                 ylab = "Number of Customers",
+                 col = c(c("lightblue","lightgreen","lightyellow","lightpink")),
+                 ylim = c(0, 400),
+                 labels = TRUE
+                 )
+
+TotalHist$breaks
+TotalHist$counts
+
+TotalIntervals = paste(TotalHist$breaks[1:length(TotalHist$breaks)-1], "-", TotalHist$breaks[2:length(TotalHist$breaks)], sep = "")
+
+TotalFreq = data.frame(TotalInterval = TotalIntervals, Frequency = TotalHist$counts)
+
+```
+
+Question 1 (a)(ii) 
+
+Relations between Total and Month Employed
+```{r}
+plot(BD$Total, BD$`Months Employed`,
+     main = "Scatterplot of Months Employed and Total",
+     xlab = "Total",
+     ylab = "Months Employed"
+     )
+cor(BD$Total, BD$`Months Employed`)
+```
+
+Relations between Total and Age
+```{r}
+plot(BD$Total, BD$Age,
+     xlab = "Total",
+     ylab = "Age"
+     )
+
+cor(BD$Total, BD$Age)
+```
+
+<p style="color:blue">
+Type your answer for 1aiii here. 
+</p>
+
+What patterns do you find?
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+### Q1.(b) Customer Credit Risk Analyses Dashboard
+The credit risk analyst is also interested in understanding the demographics of customers with different levels of Credit Risk. in this dashboard, he would like to be able to :
+
+- i. see the appropriate charts and tables to compare `Credit Risk` with `Job` as well as `Credit Risk` with `Housing`. He requested the use of stacked bar plots for these charts.
+- ii. see a description of any interesting patterns observed from the charts.
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+```{r q1.(b), echo=TRUE}
+## Type your codes here
+
+BDGroupByCRJob = BD %>% 
+            group_by(`Credit Risk`, `Job`) %>%
+            count(name = "Number of Customers") 
+
+ConTingencyCRJob = BDGroupByCRJob %>% spread(key = `Job`, value = `Number of Customers`)
+kable(ConTingencyCRJob, caption = "Contingency table for CR and Job")
+
+```
+下面我们想对high和low两类里面的四类顾客分别画柱状图
+```{r}
+barmatrix = as.matrix(ConTingencyCRJob[,2:dim(ConTingencyCRJob)[2]])
+
+barplot(barmatrix,
+        col = c("lightgreen", "lightblue"),
+        main = "Credit Risk and Jobs",
+        beside = TRUE,
+        )
+#要执行这一句必须要整块代码一起执行！否则会报错！
+legend("topleft", 
+       ConTingencyCRJob$`Credit Risk`,
+       cex = 0.8,
+       fill = c("lightgreen", "lightblue")
+       )
+
+```
+
+<p style="color:blue">
+Type your answer for 1bii here. 
+
+
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+### Q1.(c) Customer Loan Analyses Dashboard
+The credit risk analyst would like this dashboard to help him better understand the `Loan Purpose` of customers with "High" levels of `Credit Risk`. 
+
+- i. Could you generate the table and chart for them to visualize the distribution of `Loan Purpose` for "High" `Credit Risk` customers?
+- ii. Describe in your answer below: Which `Loan Purpose` types are most and least common among "High" `Credit Risk` customers? 
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+```{r q1.(c), echo=TRUE}
+## Type your codes here
+#制作频数表
+HighCRFreq = BD %>% 
+  filter(`Credit Risk` == "High") %>% 
+  count(`Loan Purpose`, name = "Frequency of Loan Purposes for High Risk Customers")
+
+# 方法2：
+BD %>% filter(`Credit Risk` == "High") %>%
+  group_by(`Loan Purpose`) %>%
+  count(name = "Frequency of Loan Purposes for High Risk Customers")
+
+# 方法3：
+BD %>% filter(`Credit Risk` == "High") %>%
+  group_by(`Loan Purpose`) %>%
+  summarise("Frequency of Loan Purposes for High Risk Customers" = n())
+
+#然后画出柱状图
+barplot(HighCRFreq$`Frequency of Loan Purposes for High Risk Customers`,
+        names.arg = HighCRFreq$`Loan Purpose`,
+        col = rainbow(12),
+        main = "Frequency of Loan Purposes for High Risk Customers",
+        horiz = TRUE,
+        xlab = "Number of Loans",
+        xlim = c(0, max(HighCRFreq$`Frequency of Loan Purposes for High Risk Customers`)*1.4),
+        cex.names = 0.5,
+        las = 1,
+        )
+
+```
+
+<p style="color:blue">
+Type your answer for 1cii here. 
+
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+### Q1.(d) Customer Account Balance Pareto Analyses 帕累托分析
+The credit risk analyst would like the findings of the pareto analyses on `Total` to be displayed in this dashboard. In particular, he wants the dashboard to show
+the number and percentage of customers that contribute most, amounting to 80% of the total account balanced with the bank. 
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+```{r q1.(d), echo=TRUE}
+## Type your codes here
+
+#提取total这一列，并从上往下排好
+BD.total = BD %>% select(`Total`) %>% arrange(desc(`Total`)) #此时类型是dataframe
+#计算每个元素在整体中的占比（仍然是从大到小）
+BD.total$Percentage = BD.total$Total/sum(BD.total)
+#计算cumulative percentage of Total
+BD.total$Cumulative = cumsum(BD.total$Percentage)
+#计算cumulative percentage of customers from top most saving
+BD.total$CumulativeCustomers = (1:nrow(BD.total))/nrow(BD.total)
+
+View(BD.total)
+```
+
+Around 24% of customers make up 80% of the total account balances.
+
+<p style="color:blue">
+Type the findings for the Pareto Analyses here.  
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+
+### Tutorial 3 Question 2 (To be Submitted; 20 marks)
+
+- Dataset required: `marketing_campaign.xlsx`
+
+This data set contains data on 2240 customers involved in a marketing campaign of a company with both physical and online presence. Each of the column is defined as follows: 
+
+- `ID` : customer unique identifier
+- `Year_Birth` :  customer year of birth
+- `Education` : customer’s level of education
+- `Marital_Status`:  customer’s marital status
+- `Income` : customer’s yearly household income
+- `Kidhome` :  number of small children in customer’s household
+- `Teenhome` : number of teenagers in customer’s household
+- `Dt_Customer`: date of customer’s enrollment with the company
+- `Recency` : number of days since the last purchase
+- `MntWines` : amount spent on wine products in the last 2 years
+- `MntFruits` : amount spent on fruits products in the last 2 years
+- `MntMeatProducts` : amount spent on meat products in the last 2 years
+- `MntFishProducts` : amount spent on fish products in the last 2 years
+- `MntSweetProducts` : amount spent on sweet products in the last 2 years
+- `MntGoldProds` : amount spent on gold products in the last 2 years
+- `NumDealsPurchases` : number of purchases made with discount
+- `NumWebPurchases` : number of purchases made through company’s web site
+- `NumCatalogPurchases` : number of purchases made using catalogue
+- `NumStorePurchases` : number of purchases made directly in stores
+- `NumWebVisitsMonth` : number of visits to company’s web site in the last month
+- `AcceptedCmp3` : 1 if customer accepted the offer in the 3rd campaign, 0 otherwise
+- `AcceptedCmp4` : 1 if customer accepted the offer in the 4th campaign, 0 otherwise
+- `AcceptedCmp5` : 1 if customer accepted the offer in the 5th campaign, 0 otherwise
+- `AcceptedCmp1` : 1 if customer accepted the offer in the 1st campaign, 0 otherwise
+- `AcceptedCmp2` : 1 if customer accepted the offer in the 2nd campaign, 0 otherwise
+- `Response`` : 1 if customer accepted the offer in the last campaign, 0 otherwise
+- `Complain` : 1 if customer complained in the last 2 years
+
+
+```{r q2-read-dataset, echo=TRUE}
+#put in your working directory folder pathname 
+
+#import excel file into RStudio
+
+
+```
+<p>
+**Now you will build some dashboards to help the marketing manager understand the customers and the marketing campaign better.**
+</p>
+
+### Q2.(a) Customer Dashboard 
+The marketing manager has the following requirements for the Customer dashboard:
+
+- i. To be able to visualize the frequency distributions for customer age, education levels, marital status, number of small children in their household, number of teenagers in their household and yearly household income. Use the most appropriate charts for each variable. (6 marks)
+- ii.  To be able to view, in a table, the frequency distribution of customers who complain versus do not complain, by education and marital status. (1 mark)
+- iii. In your answer below, describe any interesting insights or patterns you can derive from the charts. (2 marks)
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+```{r q2a, echo=TRUE}
+## Type your codes here
+
+
+
+```
+
+<p style="color:blue">
+Type your answer for 2aiii here.
+
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+### Q2.(b) Marketing Campaign Dashboard 
+There were 6 marketing campaigns conducted. Each one with varying degrees of success (in terms of number of customers taking up the offer). The marketing manager hopes this Marketing Campaign Dashboard can help him visualize the results better. In particular, he ask for the following to be on this dashboard:
+
+- i. A table displaying the number of customers who accepted and did not accept the offer for each of the 6 marketing campaigns (ie: 1st, 2nd, ... 6th) (2 marks)
+- ii. A chart to visualize the information presented in the table generated above. (2 marks)
+- iii. A description of which is the most and least successful campaign. (1 mark)
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+```{r q2b, echo=TRUE}
+## Type your codes here
+
+
+```
+
+
+<p style="color:blue">
+
+Type your answer for 2biii here.
+
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+### Q2.(c) Sales Dashboard 
+The amount customers spent on various products are captured in the data set. The marketing manager would like this dashboard to help him visualize this data better. In particular, he would like the dashboard to have the following: 
+
+- i. A chart and a corresponding table displaying the frequency distribution for customers' total amount spent. Total amount spent includes amount spent on wines, fruits, meat products, fish products, sweet products and gold products. The chart and table should be appropriately titled and labeled.  (3 marks)
+- ii. A chart to see the relationship between total amount spent and annual household income. (1 mark)
+- iii. The number and percentage of customers who spent the most, making up 80% of the total amount spent by all customers in the data set. (2 mark)
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+```{r q2c, echo=TRUE}
+## Type your codes here
+
+
+```
+
+<p style="color:blue">
+
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
