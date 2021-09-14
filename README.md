@@ -12,29 +12,29 @@ We will share the weekly notes and R codes here.
 
 ### Hands-on Tutorial 02: Foundations of R
 
-**Data Types** and **Data Structures** in R
+- **Data Types** and **Data Structures** in R
 
-Vector, Matrix, Factor, List, Dataframe
+- Vector, Matrix, Factor, List, Dataframe
 
-**Dataframe** is very important!!!
+- **Dataframe** is very important!!!
 
 
 
 ### Hands-on Tutorial 03: Descriptive Statistics
 
-Manipulation of data by using the **dyplyr** package
+- Manipulation of data by using the **dyplyr** package
 
-Graphing Skills : how to draw the Bar Charts, Pie Charts, Histogram and Scatter Plots in R
+- Graphing Skills : how to draw the Bar Charts, Pie Charts, Histogram and Scatter Plots in R
 
-**Frequency Table** is the key!!!
+- **Frequency Table** is the key!!!
 
 
 
-### Hands-on Tutorial 04: Intro to Probability & Mathematical Statistics
+### Hands-on Tutorial 04: Probability & Statistics Concepts
 
-Probability Concepts: **Random Variable**, Probability Distribution
+- Probability Concepts: Random Variable, Probability Distribution
 
-Mathematical Statistics: 
+- Statistics Comcepts: Sample, Population, Outlier Detection 
 
 
 
