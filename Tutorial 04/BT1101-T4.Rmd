@@ -1,0 +1,463 @@
+---
+title: "BT1101-Tutorial 4 (Deadline: 27 Sept 8am)"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+## Introduction to R Markdown
+
+R Markdown, is an extremely useful tool that professional data scientists and business analysts use in their day-to-day work.
+
+You can open R Markdown documents in RStudio as well. You should see a little command called "Knit", which allows you to "knit" the entire R Markdown file into a HTML document, or a PDF document, or a MS Word Document (note, for MS Word, you'll need MS Word installed on your system; for PDF, you need to have Tex/Latex distribution installed).
+
+R Markdown is nice to use simply because it allows you to embed both code and write-up into the same document, and it produces presentable output, so you can use it to generate reports from your homework, and, when you eventually go out to work in a company, for your projects.
+
+Here's how you embed a "chunk" of R code.
+
+```{r example-chunk, echo=TRUE}
+1+1
+```
+
+After the three apostrophes, you'll need `r`, then you can give the chunk a name. Please note that **CHUNK NAMES HAVE TO BE A SINGLE-WORD, NO SPACE ALLOWED**. Also, names have to be unique, that is, every chunk needs a **different** name (this has led to rendering failures in previous final exams). You can give chunks names like:
+
+- `chunk1`
+- `read-in-data`
+- `run-regression`
+
+or, what will help you with homework:
+
+- `load-library`
+- `q1.(a)` etc
+
+These names are for you to help organize your code. (In practice it will be very useful when you have files with thousands of lines of code...). After the name of the chunk, you can give it certain options, separated by commas. I will highlight one important option. 
+
+- `echo=TRUE` means the code chunk will be copied into the output file. For homework purposes, **ALWAYS** set `echo=TRUE` so we know what code you wrote. When you go out to work in a company and you want to produce nice looking reports, feel free to set it to FALSE.
+
+There is a lot to syntax to learn using the R Markdown, but we don't need you to be an expert in R Markdown (although we do expect proficiency in R!). Hopefully, you can copy all the R Markdown syntax you need from the templates we provide. 
+
+Note about *working directories* in R Markdown. If you do not specify your working directory via `setwd('...')`, and you hit `Knit`, the document will assume that the working directory is the directory that the `.rmd` file is in. Thus, if your rmd is in `XYZ/folder1/code.rmd` and your dataset is `XYZ/folder1/data.csv`, then you can simply run `d0 <- read.csv('data.csv')` without running `setwd()`.
+
+
+## Submission Instructions
+
+- Select `output: html_document`.
+- We would recommend that you play with the PDF file using pdf_document for your own benefit. We only require `html` format for assignments and exam.
+- Include all code chunks, so include `echo=TRUE` in all chunks.
+- Replace the placeholder text, "Type your answer here.", with the answer of your own.  (This is usually the descriptive and explanation part of your answer)
+- Submit *only* the required question for grading (Question 2: Submission). You can delete everything else for that submission. Remember to include any `library('package_name')` statements that you'll need to run your code and future reproduction. 
+- Rename your R Markdown file `T[X]_[MatricNumber].rmd`, and the output will automatically be `T[X]_[MatricNumber].html`. 
+    - for example, `T4_12345.html`
+    - X is the Tutorial number at the top of this file. For example, this file is for "T4".
+- Submit both R Markdown file (.rmd) and HTML (.html) to Luminus for tutorial assignments (upload to Luminus under the correct Submission Folder). We shall do the same for the exam.
+- **It is important to be able to code and produce your Rmarkdown output file *independently*.** You are responsible for de-bugging and programming in the exam.
+
+## Preparation
+
+## Tutorial 4
+
+```{r load-libraries, echo=TRUE}
+# install required packages if you have not (suggested packages: dplyr, tidyr, rpivotTable, knitr, psych)
+# install.packages("dplyr") #only need to run this code once to install the package
+# load required packages 
+# library("xxxx")
+library("dplyr") #need to call the libary before you use the package
+library("tidyr")
+library("rpivotTable")
+library("knitr")
+library("psych")
+library("readxl")
+```
+
+
+## Tutorial 4 Question 1 (For class discussion in week 6)
+
+- Dataset required: `Sales Transactions.xlsx`
+
+`Sales Transactions.xlsx` contains the records of all sale transactions for a day, July 14. Each of the column is defined as follows:
+
+- `CustID` :  Unique identifier for a customer
+- `Region`: Region  of customer's home address 
+- `Payment`: Mode of payment used for the sales transaction
+- `Transction Code`: Numerical code for the sales transaction
+- `Source`: Source of the sales (whether it is through the Web or email)
+- `Amount`: Sales amount
+- `Product`: Product bought by customer
+- `Time Of Day`: Time in which the sale transaction took place. 
+
+
+```{r q1-read-dataset, echo=TRUE}
+#put in your working directory folder path name ()
+pathName = "~/Desktop/专业技能模块/计算机专业技能/学校课程/BT1101 Introduction to Business Analytics/Hands-on Coaching/Course-BT1101-IntroBA/Data/Sales Transactions.xlsx"
+#import excel file into RStudio
+ST = read_excel(pathName, skip = 1)
+View(ST)  
+```
+
+<p>
+**As the business analytics analyst of the company, you have been tasked to help the store manager develop dashboard that will enable him to gain better insights of the data. **
+</p>
+
+
+### Q1.(a) Customer Dashboard 
+The manager would like to have a better understanding of the customer profiles. He would like the customer dashboard to be able to display the following:
+
+- i. frequency distribution for the regions the customers are from
+
+He would also like to have your interpretation of the tables and charts generated. Write your observation in the space below. 
+
+Draw a pie chart for the frequency of regions
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+```{r 1a-sale i, echo=TRUE}
+# Step1: Get the frequency table!
+RegionFreq = ST %>% count(`Region`, name = "Frequency of Transactions by Regions") 
+kable(RegionFreq, caption = "Frequency of Transactions by Regions")
+
+# Step2: Extract the frequency numbers and calculate the percentages
+RegionFreqNum = RegionFreq$`Frequency of Transactions by Regions`
+RegionFreqPercentage = round(RegionFreqNum/sum(RegionFreqNum),4)*100
+
+# Step3: Make the labels
+label = paste(RegionFreq$Region, ", ", RegionFreqPercentage, "%", sep = "")
+
+# Step4: Draw the pie chart
+pie(RegionFreqNum,
+    labels = label,
+    col = c("lightgreen","lightblue","lightpink","lightyellow"),
+    radius = 0.9,
+    main = "Frequency of Transactions by Regions"
+    )
+```
+
+- ii. frequency distribution for the payment mode used by the customers
+
+Draw a bar chart for the frequency of Transactions by Payment Mode
+```{r 1a-sale ii, echo=TRUE}
+# Step1: Get the frequency table
+PayModeFreq = ST %>% count(`Payment`, name = "Frequency of Transactions by Payment Modes")
+kable(RegionFreq, caption = "Frequency of Transactions by Payment Modes")
+
+# Step2: Draw the bar chart
+barplot(PayModeFreq$`Frequency of Transactions by Payment Modes`,
+        names.arg = PayModeFreq$Payment,
+        col = c("lightgreen","lightblue"),
+        ylim = c(0,350),
+        main = "Frequency of Transactions by Payment Modes"
+        )
+```
+
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+### Q1.(b) Sales Transaction Analyses Dashboard 
+The manager would also like to have a dashboard to be able to visualize the sales `Amount` data better. 
+
+- i. First, generate the descriptive statistics for `Amount` in a table. The manager would like to include only these statistics: n (or number of observations), mean, sd, median, skew, kurtosis. (Discuss what these statistics tell you about the distribution of `Amount`. Is it normally distributed?)
+
+```{r 1b-sale i, echo=TRUE}
+describe(ST$Amount)
+
+# what is the data structure?
+
+# which pakage is the function "describe()" from? --> psych 
+
+#describe(ST$Region) can we describe a non-numeric random variable?
+
+```
+
+```{r }
+# mean
+mean(ST$Amount)
+
+# median
+median(ST$Amount)
+
+# mode: how to get the mode?
+RegionFreqTable = table(ST$Region) # use table() to build a simple frequency table
+names(RegionFreqTable)[RegionFreqTable == max(RegionFreqTable)] # extract the element with the biggest frequency number
+                                                                # I do not care the specific number. I just need its name
+
+# Measures of dispersion
+# std.dev
+sd(ST$Amount) # sample variance or population variance?
+
+# range
+range(ST$Amount)
+
+# IQR
+IQR(ST$Amount)
+
+# quantile
+quantile(ST$Amount, c(0.25, 0.75)) # 25th quantile and 75th quantile
+
+
+# Measure of shape
+# skewness 
+skew(ST$Amount) 
+
+# kurtosis
+kurtosi(ST$Amount)
+```
+
+- ii. Plot the histogram for `Amount` and conduct the appropriate goodness of fit test to confirm if it is normally distributed. 
+
+```{r 1b-sale ii, echo=TRUE}
+
+AmountHist = hist(ST$Amount,
+                 main = "Histogram of Tansaction Amount",
+                 xlab = "The Amount of the Transaction",
+                 ylab = "The Number of Transactions",
+                 col = c("lightgreen","lightblue","lightpink","lightyellow"),
+                 ylim = c(0, 220),
+                 labels = TRUE
+                 )
+
+shapiro.test(ST$Amount) # p-value << 0.05
+# We have strong statistical evidence to say the random variable "Amount" is not normally distributed
+
+```
+
+- iii. The manager is concerned about potential outliers in the data. Can you help to identify if any outliers for `Amount` exists? 
+
+Method 1 of detecting the outliers: 1.5IQR or 3IQR
+```{r 1b-sale iii method 1, echo=TRUE}
+# Step1: Visualize the outliers
+boxplot(ST$Amount, 
+        range = 3,
+        col = "lightgreen",
+        border = "blue",
+        horizontal = TRUE, 
+        main = "Box Plot of the Transaction Amount"
+        ) 
+
+# Step2: Calculate the IQR range
+q1 = as.numeric(quantile(ST$Amount, 0.25)) # why as.numeric? : remove the name of the quantile
+q3 = as.numeric(quantile(ST$Amount, 0.75))
+iqr = IQR(ST$Amount) 
+
+# Step3: Calculate the interval
+lowerExtreme = q1 - 3*iqr 
+upperExtreme = q3 + 3*iqr
+intervalExterme = cbind(lowerExtreme, upperExtreme)
+
+lowerMild = q1 - 1.5*iqr
+upperMild = q3 + 1.5*iqr
+intervalMild = cbind(lowerMild, upperMild)
+
+# Step4: Remove the outliers
+outliers = ST %>% filter((ST$Amount > upperExtreme) | (ST$Amount < lowerExtreme))
+nonOutliers = ST %>% filter((ST$Amount <= upperExtreme) & (ST$Amount >= lowerExtreme))
+
+nrow(outliers) # 53
+nrow(nonOutliers) # 419
+
+```
+
+Method 2 of detecting the outliers: z-score
+```{r 1b-sale iii method 2, echo=TRUE}
+# Step1: Standardization
+ST$AmountZScore = (ST$Amount - mean(ST$Amount))/sd(ST$Amount) # standardization: mean=0, variance=1
+
+# Step2: Remove the outliers
+outliersZScore = ST %>% filter((ST$AmountZScore < -3) | (ST$AmountZScore > 3))
+nonOutliersZScore = ST %>% filter((ST$AmountZScore >= -3) & (ST$AmountZScore <= 3))
+
+nrow(outliersZScore) # 19
+nrow(nonOutliersZScore) # 453
+```
+
+
+- iv. The manager suspects that the sales `Amount` may differ for transactions involving `Book` versus `DVD`. Could you generate the table and chart for him to be able to compare the mean and standard deviations of `Amount` for books versus dvds? Describe what you can observe from the chart. 
+
+
+```{r 1b-sale iv, echo=TRUE}
+# Step1: Make the frequency table
+BookDVDTable = ST %>% 
+  group_by(`Product`) %>% 
+  filter(Product == "Book" | Product == "DVD") %>%
+  summarise(mean = mean(`Amount`), SD = sd(`Amount`))
+
+# Step2: Draw the bar chart
+barplot(as.matrix(BookDVDTable[,2:dim(BookDVDTable)[2]]), # basic data structure: vector, matrix
+        beside = TRUE,
+        col = c("lightgreen", "lightblue"),
+        main = "Mean and Standard Deviation of Amount across Products",
+        horiz = TRUE,
+        cex.names = 1.2,
+        las = 1,
+        xlab = "Amount",
+        xlim = c(0,80)
+        )
+
+legend("bottomright",
+       BookDVDTable$Product,
+       fill = c("lightgreen", "lightblue"),
+       cex = 0.8
+       )
+
+
+```
+
+- v. Perform the outlier analyses separately for books and dvds. What observations can you make now? Would you remove any of the outliers? 
+
+```{r 1b-sale v, echo=TRUE}
+# Step1: Get the dataframe
+Book = ST %>% filter(Product == "Book")
+DVD = ST %>% filter(Product == "DVD")
+
+# Step2: Visualize the outliers
+boxplot(Book$Amount, 
+        range = 3,
+        col = "lightgreen",
+        border = "blue",
+        horizontal = TRUE, 
+        main = "Box Plot of the Amount of Product Book"
+        ) 
+
+# Step3: Remove the outliers (same as iii)
+
+```
+
+
+
+### Q1.(c) Computing probabilities 
+The manager would like to use the existing data to compute the probability of the following events: 
+
+- i. `Amount` for sales transaction of `Book` is greater than $60.
+
+We are using the frequency to replace the probability.
+Is it reasonable and rigorous?
+```{r 1c-sale i, echo=TRUE}
+nrow(Book %>% filter(Amount >= 60)) / nrow(Book) # 0.2030651
+```
+
+- ii. the sales transaction of `DVD` will come from the Web.
+
+Given the condition "DVD", what is the probability that this transaction is from the web? (Conditional Probability)
+
+```{r 1c-sale ii, echo=TRUE}
+nrow(DVD %>% filter(Source == "Web")) / nrow(DVD) #0.7630332
+```
+
+### Tutorial 4 Question 2 (To be Submitted; 25 marks)
+
+- Dataset required: `marketing_campaign.xlsx`
+
+This data set contains data on 2240 customers involved in a marketing campaign of a company with both physical and online presence. Each of the column is defined as follows: 
+
+- `ID` : customer unique identifier
+- `Year_Birth` :  customer year of birth
+- `Education` : customer’s level of education
+- `Marital_Status`:  customer’s marital status
+- `Income` : customer’s yearly household income
+- `Kidhome` :  number of small children in customer’s household
+- `Teenhome` : number of teenagers in customer’s household
+- `Dt_Customer`: date of customer’s enrollment with the company
+- `Recency` : number of days since the last purchase
+- `MntWines` : amount spent on wine products in the last 2 years
+- `MntFruits` : amount spent on fruits products in the last 2 years
+- `MntMeatProducts` : amount spent on meat products in the last 2 years
+- `MntFishProducts` : amount spent on fish products in the last 2 years
+- `MntSweetProducts` : amount spent on sweet products in the last 2 years
+- `MntGoldProds` : amount spent on gold products in the last 2 years
+- `NumDealsPurchases` : number of purchases made with discount
+- `NumWebPurchases` : number of purchases made through company’s web site
+- `NumCatalogPurchases` : number of purchases made using catalogue
+- `NumStorePurchases` : number of purchases made directly in stores
+- `NumWebVisitsMonth` : number of visits to company’s web site in the last month
+- `AcceptedCmp3` : 1 if customer accepted the offer in the 3rd campaign, 0 otherwise
+- `AcceptedCmp4` : 1 if customer accepted the offer in the 4th campaign, 0 otherwise
+- `AcceptedCmp5` : 1 if customer accepted the offer in the 5th campaign, 0 otherwise
+- `AcceptedCmp1` : 1 if customer accepted the offer in the 1st campaign, 0 otherwise
+- `AcceptedCmp2` : 1 if customer accepted the offer in the 2nd campaign, 0 otherwise
+- `Response`` : 1 if customer accepted the offer in the last campaign, 0 otherwise
+- `Complain` : 1 if customer complained in the last 2 years
+
+```{r q2-read-dataset, echo=TRUE}
+#put in your working directory folder path name
+
+#import excel file into RStudio
+
+
+
+#To identify rows with missing data, we can use the function complete.cases() to check rows with missing data, or summary() for columns with NAs
+
+```
+<p>
+**You will continue to build on the dashboards from Tutorial 3 to help the marketing manager understand the customers and the marketing campaign better. Now that you have learnt how to conduct outlier analyses, you are expected to perform the necessary checks and decide whether to remove the outliers before analysing the data and building the dashboards. If any data is removed, please explain your decision for their removal. (We will not perform data imputation for this tutorial.)**
+</p>
+
+### Q2.(a) Customer Dashboard 
+- i. The marketing manager would like to include some descriptive statistics in the Customer dashboard. Generate a table to display the mean, standard deviation, minimum, maximum, range, median, skewness and kurtosis for customer age and household income. (4 marks)
+- ii. Generate the necessary plots and conduct the appropriate test to assess if `Age` and `Income` are normally distributed. Write your interpretation in the space below. (3 marks)
+- iii. He would like to compare the mean household income by customer marital status on a chart. (3 marks)
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+```{r q2a, echo=TRUE}
+
+
+
+
+
+
+
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+### Q2.(b) Customer Purchase Dashboard 1
+Here are a few requirements the marketing manager has on this dashboard: 
+
+- i. To be able to view the summary statistics (mean, sd, min, max, coefficient of variation) for the amount spent on each of the items (wines, fruit, meat, fish, sweet and gold) in last two years in a table. (3 marks)
+- ii. To have a chart to compare the mean amount spent across the different items (wines, fruit, meat, fish, sweet and gold). Type your interpretation below. (2 marks)
+- iii. To have a chart to compare the coefficients of variation for amount spent across each of the items (wines, fruit, meat, fish, sweet and gold). Type your interpretation below. (2 marks)
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+```{r q2b, echo=TRUE}
+
+## Type your codes here
+
+
+
+```
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+### Q2.(c) Customer Purchase Dashboard 2
+The marketing manager would like the following in the dashboard: 
+
+- i. To have a table and chart to compare the mean and median total amount spent (ie. the sum of each customer's spending across all 6 products) by customer marital status (4 marks)
+- ii. To plot the appropriate chart and compute the appropriate statistical measure to determine the linear association between customer annual household income and their spending. Type your interpretation of the chart and statistical measure in the space below.  (2 marks)
+- iii. Based on the data, what percentage of customers spent most on wine in the past 2 years? Among those who spent most on wine, what percentage are "widowed"? (2 marks)
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+```{r q2c, echo=TRUE}
+
+## Type your codes here
+                      
+
+```
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
