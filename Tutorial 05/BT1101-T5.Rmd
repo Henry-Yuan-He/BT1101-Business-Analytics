@@ -1,0 +1,307 @@
+---
+title: "BT1101-Tutorial 5 (Deadline: 4 Oct 8am)"
+output: html_document
+---
+
+## Introduction to R Markdown
+
+R Markdown, is an extremely useful tool that professional data scientists and business analysts use in their day-to-day work.
+
+You can open R Markdown documents in RStudio as well. You should see a little command called "Knit", which allows you to "knit" the entire R Markdown file into a HTML document, or a PDF document, or a MS Word Document (note, for MS Word, you'll need MS Word installed on your system; for PDF, you need to have Tex/Latex distribution installed).
+
+R Markdown is nice to use simply because it allows you to embed both code and write-up into the same document, and it produces presentable output, so you can use it to generate reports from your homework, and, when you eventually go out to work in a company, for your projects.
+
+Here's how you embed a "chunk" of R code.
+
+```{r example-chunk, echo=TRUE}
+1+1
+```
+
+After the three apostrophes, you'll need `r`, then you can give the chunk a name. Please note that **CHUNK NAMES HAVE TO BE A SINGLE-WORD, NO SPACE ALLOWED**. Also, names have to be unique, that is, every chunk needs a **different** name (this has led to rendering failures in previous final exams). You can give chunks names like:
+
+- `chunk1`
+- `read-in-data`
+- `run-regression`
+
+or, what will help you with homework:
+
+- `load-library`
+- `q1.(a)` etc
+
+These names are for you to help organize your code. (In practice it will be very useful when you have files with thousands of lines of code...). After the name of the chunk, you can give it certain options, separated by commas. I will highlight one important option. 
+
+- `echo=TRUE` means the code chunk will be copied into the output file. For homework purposes, **ALWAYS** set `echo=TRUE` so we know what code you wrote. When you go out to work in a company and you want to produce nice looking reports, feel free to set it to FALSE.
+
+
+There is a lot to syntax to learn using the R Markdown, but we don't need you to be an expert in R Markdown (although we do expect proficiency in R!). Hopefully, you can copy all the R Markdown syntax you need from the templates we provide. 
+
+
+Note about *working directories* in R Markdown. If you do not specify your working directory via `setwd('...')`, and you hit `Knit`, the document will assume that the working directory is the directory that the `.rmd` file is in. Thus, if your rmd is in `XYZ/folder1/code.rmd` and your dataset is `XYZ/folder1/data.csv`, then you can simply run `d0 <- read.csv('data.csv')` without running `setwd()`.
+
+
+## Submission Instructions
+
+- Select `output: html_document`.
+- We would recommend that you play with the PDF file using pdf_document for your own benefit. We only require `html` format for assignments and exam.
+- Include all code chunks, so include `echo=TRUE` in all chunks.
+- Replace the placeholder text, "Type your answer here.", with the answer of your own.  (This is usually the descriptive and explanation part of your answer)
+- Submit *only* the required question for grading (Question 2: Submission). You can delete everything else for that submission. Remember to include any `library('package_name')` statements that you'll need to run your code and future reproduction. 
+- Rename your R Markdown file `T[X]_[MatricNumber].rmd`, and the output will automatically be `T[X]_[MatricNumber].html`.
+    - for example, `T5_12345.html`
+    - X is the Tutorial number at the top of this file. For example, this file is for "T5".
+- Submit both R Markdown file (.rmd) and HTML (.html) to Luminus for tutorial assignments (upload to Luminus under the correct Submission Folder). We shall do the same for the exam.
+- **It is important to be able to code and produce your Rmarkdown output file *independently*.** You are responsible for de-bugging and programming in the exam.
+
+## Preparation
+
+## Tutorial 5
+
+```{r load-libraries, echo=TRUE}
+# install required packages if you have not (suggested packages: rcompanion, rstatix, Rmisc, dplyr, tidyr, rpivotTable, knitr, psych)
+# install.packages("dplyr") #only need to run this code once to install the package
+# load required packages 
+# library("xxxx")
+#install.packages("Rmisc")
+library("rcompanion") #this package is required for transformTukey function
+library("rstatix")
+library("Rmisc") 
+library("dplyr") #need to call the libary before you use the package
+library("tidyr")
+library("rpivotTable")
+library("knitr")
+library("psych")
+
+```
+
+
+## Tutorial 5 Question 1 (For class discussion and hands-on coaching session in week 7)
+- Dataset required: `Sales Transactions.xlsx`
+
+`Sales Transactions.xlsx` contains the records of all sale transactions for a day, July 14. Each of the column is defined as follows:
+
+- `CustID` :  Unique identifier for a customer
+- `Region`: Region  of customer's home address 
+- `Payment`: Mode of payment used for the sales transaction
+- `Transction Code`: Numerical code for the sales transaction
+- `Source`: Source of the sales (whether it is through the Web or email)
+- `Amount`: Sales amount
+- `Product`: Product bought by customer
+- `Time Of Day`: time in which the sale transaction took place. 
+
+
+```{r q1-read-dataset, echo=TRUE}
+
+#put in your working directory folder pathname ()
+pathName = "~/Desktop/专业技能模块/计算机专业技能/学校课程/BT1101 Introduction to Business Analytics/Hands-on Coaching/Course-BT1101-IntroBA/Data/Sales Transactions.xlsx"
+
+#import excel file into RStudio
+ST = read_excel(pathName, skip = 1)
+View(ST)  
+```
+
+<p>
+**In the last tutorial, you were tasked to help the store manager develop dashboards that will enable him to gain better insights of the data. In this tutorial, you will use the data to conduct sampling estimation and hypotheses testing.**
+
+**You may use the following guideline to round off your answers: If the answer is greater than 1, round off to 2 decimal places. If the answer is less than 1, round off to 3 significant numbers. When rounding, also take note of the natural rounding points, for example, costs in dollars would round off to 2 decimal places.**
+</p>
+
+
+### Q1.(a) Computing Interval Estimates
+**Using the sale transaction data on July 14,**
+
+- i) compute the 95% and 99% confidence intervals for the mean of `Amount`. Which interval is wider and what does a wider interval estimate imply?
+
+
+```{r q1ai, echo=TRUE}
+# 95% confidence interval
+lowerBoundAmountCI95 = mean(ST$Amount) - qt(0.975, df=length(ST$Amount)-1)*sd(ST$Amount)/sqrt(length(ST$Amount))
+upperBoundAmountCI95 = mean(ST$Amount) + qt(0.975, df=length(ST$Amount)-1)*sd(ST$Amount)/sqrt(length(ST$Amount))
+
+cbind(lowerBoundAmountCI95, upperBoundAmountCI95)
+
+```
+
+- ii) compute the 90% confidence interval for proportion of book sale transactions with sales amount being greater than \$50. Could the company reasonably conclude that the true proportion of book sale transactions with sales amount greater than \$50 is 30%? What about less than 20%? 
+
+```{r q1aii, echo=TRUE}
+# 90% CI for proportion
+books = ST %>% filter(Product == "Book")
+booksMore50 = books %>% filter(Amount > 50)
+
+sampleProportion = nrow(booksMore50)/nrow(books)
+lowerBoundBookPCI90 = sampleProportion - qnorm(0.95)*sqrt(sampleProportion*(1-sampleProportion)/nrow(books))
+upperBoundBookPCI90 = sampleProportion + qnorm(0.95)*sqrt(sampleProportion*(1-sampleProportion)/nrow(books))
+
+cbind(lowerBoundBookPCI90, upperBoundBookPCI90)
+```
+
+- iii) compute the 95% prediction interval for `Amount` for orders of DVD. Explain to the store manager what this prediction interval mean? 
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+```{r q1aiii, echo=TRUE}
+# Enter your codes here
+dvd = ST %>% filter(Product=="DVD")
+sampleMeanDVD = mean(dvd$Amount)
+sampleSDDVD = sd(dvd$Amount)
+
+lowerBoundDVDAmountPI95 = sampleMeanDVD - qt(0.975, df=nrow(dvd)-1)*sampleSDDVD*sqrt(1+1/nrow(dvd))
+upperBoundDVDAmountPI95 = sampleMeanDVD + qt(0.975, df=nrow(dvd)-1)*sampleSDDVD*sqrt(1+1/nrow(dvd))
+
+cbind(lowerBoundDVDAmountPI95, upperBoundDVDAmountPI95)
+```
+```{r q1aiii, echo=TRUE}
+# Enter your codes here
+qqnorm(dvd$Amount, ylab = "Sample Quantiles for Amount for DVD")
+qqline(dvd$Amount, col="blue")
+
+shapiro.test(dvd$Amount) # not normal
+
+dvd$AmountTransform = transformTukey(dvd$Amount, plotit = FALSE) # lambda = 0.6
+
+# The data is transformed by: if (lambda >  0){TRANS = x ^ lambda}
+# We now calculate the PI
+lowerPITrans = mean(dvd$AmountTransform) - qt(0.975, df=nrow(dvd)-1)*sd(dvd$AmountTransform)*sqrt(1+1/nrow(dvd))
+upperPITrans = mean(dvd$AmountTransform) + qt(0.975, df=nrow(dvd)-1)*sd(dvd$AmountTransform)*sqrt(1+1/nrow(dvd))
+cbind(lowerPITrans, upperPITrans)
+
+# reverse the transform effect
+lowerPIfinal = lowerPITrans^(1/0.6)
+upperPIfinal = upperPITrans^(1/0.6)
+cbind(lowerPIfinal, upperPIfinal)
+
+# Compare the differnces. Why similar?
+
+```
+<p style="color:blue">
+Type your answer here.
+</p>
+
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+### Q1.(b) Hypothesis Testing
+**The store manager would like to draw some conclusions from the sales transaction data. He does not believe there are outliers in the data so you may leave all the data as is. He would like your help to set up and test the following hypotheses.**
+
+- i) Is the proportion of book sales transactions with `Amount` greater than $50 at least 10 percent of book sales transactions? 
+- ii) Is the mean sales amount for books the same as for dvds? 
+- iii) Is the mean sales amount for dvds the same across all 4 regions? 
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+```{r q1b, echo=TRUE}
+# Enter your codes here
+books = ST %>% filter(Product == "Book")
+booksMore50 = books %>% filter(Amount > 50)
+
+sampleProportion = nrow(booksMore50)/nrow(books)
+
+
+```
+
+<p style="color:blue">
+
+Type your answer here.
+</p>
+ 
+</p>
+
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+## Tutorial 5 Question 2 (To be Submitted; 25 marks)
+
+- Dataset required: `marketing_campaign.xlsx`
+
+This data set contains data on 2240 customers involved in a marketing campaign of a company with both physical and online presence. Each of the column is defined as follows: 
+
+- `ID` : customer unique identifier
+- `Year_Birth` :  customer year of birth
+- `Education` : customer’s level of education
+- `Marital_Status`:  customer’s marital status
+- `Income` : customer’s yearly household income
+- `Kidhome` :  number of small children in customer’s household
+- `Teenhome` : number of teenagers in customer’s household
+- `Dt_Customer`: date of customer’s enrollment with the company
+- `Recency` : number of days since the last purchase
+- `MntWines` : amount spent on wine products in the last 2 years
+- `MntFruits` : amount spent on fruits products in the last 2 years
+- `MntMeatProducts` : amount spent on meat products in the last 2 years
+- `MntFishProducts` : amount spent on fish products in the last 2 years
+- `MntSweetProducts` : amount spent on sweet products in the last 2 years
+- `MntGoldProds` : amount spent on gold products in the last 2 years
+- `NumDealsPurchases` : number of purchases made with discount
+- `NumWebPurchases` : number of purchases made through company’s web site
+- `NumCatalogPurchases` : number of purchases made using catalogue
+- `NumStorePurchases` : number of purchases made directly in stores
+- `NumWebVisitsMonth` : number of visits to company’s web site in the last month
+- `AcceptedCmp3` : 1 if customer accepted the offer in the 3rd campaign, 0 otherwise
+- `AcceptedCmp4` : 1 if customer accepted the offer in the 4th campaign, 0 otherwise
+- `AcceptedCmp5` : 1 if customer accepted the offer in the 5th campaign, 0 otherwise
+- `AcceptedCmp1` : 1 if customer accepted the offer in the 1st campaign, 0 otherwise
+- `AcceptedCmp2` : 1 if customer accepted the offer in the 2nd campaign, 0 otherwise
+- `Response`` : 1 if customer accepted the offer in the last campaign, 0 otherwise
+- `Complain` : 1 if customer complained in the last 2 years
+
+```{r q2-read-dataset, echo=TRUE}
+#put in your working directory folder pathname 
+#import excel file into RStudio
+
+```
+<p>
+**In the last two tutorials, you have helped to build the dashboards to help the marketing manager understand the customers and the marketing campaign better. This tutorial you will help to develop estimates of the population and to conduct hypothesis testings. As with T4, you are required to identify and decide what to do with outlier or erroneous data. Please explain your decision in your answer. We will not perform data imputation for this tutorial.**
+</p>
+
+<p style="color:red">**One mark will be awarded for submission of HTML file that is knitted from the RMD file.** </p>
+
+### Q2.(a) Computing Interval Estimates
+Using the data from the marketing campaign:
+
+- i. Develop 95% confidence interval to estimate the mean customer age of the company. Based on this result, explain to the marketing manager if the company can reasonably conclude that its customers' average age is 50? (Take 2021 as the reference year when computing the `Age` variable) (2 marks)
+- ii. Develop 95% confidence interval to estimate the true proportion of customers who complain in the company. From this interval estimate, explain to the marketing manager if the company should be concerned if it has set a target for proportion of customers that complain not to exceed 1%? (2 marks)
+- iii. Develop 90% prediction interval for the total amount spent by each customer (i.e. sum of amount spent for wine, fruits, meat, fish, sweet and gold products). Explain what this interval means to the marketing manager. (3 marks)
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+```{r q2a, echo=TRUE}
+
+## Type your codes here
+
+
+
+
+```
+
+<p style="color:blue">
+Type your answer here.
+
+
+</p>
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+### Q2.(b) Hypothesis Testing
+
+- i. In T4, you created a chart for the customer dashboard to compare the mean household income by customer marital status. Could you conduct a hypothesis test to determine if significant differences exist in the mean household income among customers of different marital status? (4 marks)
+- ii. In T4, you also created a chart for the customer purchase dashboard to compare the mean spending on different products. Could you conduct a hypothesis test to determine if the average amount spent on wine is more than that for meat? Could you also conduct a hypothesis test to determine if the average amount spent by customers is different between fruits and sweet products? (6 marks) 
+- iii. The company believes that the average total amount spent per customer is greater than $580. Could you conduct a hypothesis test to determine if this statement could be accepted? (3 marks)
+- iv. The company proposes that the mean number of web purchases would be different for customers who have children and/or teenagers in the house compared to those who do not. Could you conduct a hypothesis test to determine if this statement could be accepted?  (4 marks)
+
+For each of the above, type out your hypotheses (H0, H1) clearly in your answer below and type your conclusion based on the results. 
+
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+```{r q2b, echo=TRUE}
+
+# Type your codes here
+
+
+```
+
+<p style="color:blue">
+Type your answer here.
+
+</p>
+<p style="color:red">**END: YOUR ANSWER**</p>
+
