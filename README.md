@@ -38,3 +38,10 @@ We will share the weekly notes and R codes here.
 
 
 
+### Hands-on Tutorial 05: Mathematical Statistics: Interval Estimation & Hypothesis Testing
+
+- Estimation Methods for unknown parameters: Point Estimation, Interval Estimation, Hypothesis Testing
+
+- Testing for the equality of population means across many population groups: ANOVA
+
+
