@@ -1,0 +1,286 @@
+---
+title: "BT1101-Tutorial 6"
+output: html_document
+---
+
+## Submission Instructions
+
+- Select `output: html_document`.
+- Include all code chunks, so include `echo=TRUE` in all chunk headers.
+- Replace the placeholder text, "Type your answer here.", with the answer of your own.  (This is usually the descriptive and explanation part of your answer)
+- Submit **only** the required question for grading (Question 2: Submission). You can delete everything else for that submission. Remember to include any `library('package_name')` statements that you'll need to run your code and future reproduction. 
+- Rename your R Markdown file `T[X]_[MatricNumber].rmd`, and the output will automatically be `T[X]_[MatricNumber].html`.
+    - for example, `T6_12345.html`
+    - X is the Tutorial number at the top of this file. For example, this file is for "T6".
+- Submit both R Markdown file (.rmd) and HTML (.html) to Luminus for tutorial assignments (upload to Luminus under the correct Submission Folder). 
+- **It is important to be able to code and produce your Rmarkdown output file *independently*.** 
+
+## Tutorial 6: Linear Regression
+
+```{r load-libraries, echo=TRUE, message=FALSE}
+# intall required packages if you have not (suggested packages: rcompanion, rstatix, Rmisc, dplyr, tidyr, rpivotTable, knitr, psych)
+# install.packages("dplyr") #only need to run this code once to install the package
+# load required packages 
+# library("xxxx")
+library(dplyr)
+library(tidyverse)
+library(ggplot2) 
+```
+
+
+## Tutorial 6 Question 1 
+### (To be discussed in Tutorial 6 (the week of 4 Oct - 9 Oct))
+
+
+- Dataset required: `Tutorial6_WorldBankData.csv`
+
+(Note: This dataset comes from a publically available dataset from The World Bank. https://databank.worldbank.org/source/world-development-indicators.)
+
+First, load in the dataset for this question. There are 8 variables in this (real) dataset, from 258 countries in 2016/2017:
+
+- `Human.Capital.Index`. Unitless number that goes from 0 to 1.
+- `GDP.per.capita.PPP`. In $. This is GDP per capita, but taking into account the purchasing power of the local currency, by comparing how much it costs to buy a basket of goods (e.g. food) compared to the reference currency (USD). (PPP stands for Purchasing Power Parity)
+- `Health.Expenditure.per.capita`. In $.
+- `Tertiary.Education.Expenditure.per.student`. In $.
+- `Population`. In people.
+- `Life.Expectancy.at.birth`. In years.
+- `Diabetes.Prevalence`. In units of % of population ages 20 to 79.
+- `Years.of.Compulsory.Education`. In years.
+
+This being a real dataset, there is lots of missing data. Be wary of this!
+
+```{r q1-read-dataset, echo=TRUE}
+d1 = read.csv('Tutorial6_WorldBankData.csv')
+head(d1, 3)
+View(d1)
+```
+
+
+
+### Q1a) 
+First, let's investigate `Human.Capital.Index`. As noted by Prime Minister Lee in his 2019 National Day Rally, Singapore topped the world on this Human Capital Index in 2018. Let's try to see what are some of the possible variables that correlate with this.
+
+Start off by plotting `Human.Capital.Index` (on the y-axis) versus `GDP.per.capita.PPP` on the x-axis. What do you notice? What type of relationship exists between the two variables? Is it linear?
+
+Make a new variable that is the base10 logarithm of `GDP.per.capita.PPP`. Plot `Human.Capital.Index` against this new variable. What do you notice now?
+
+For fun: try to add color to the dot that represents Singapore (i.e., make Singapore a red dot). 
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+```{r q1a-plot, echo=TRUE}
+# NOTE: log() is the NATURAL log. log10() is base 10
+d1$logGDP = log10(d1$GDP.per.capita.PPP)
+
+plot(d1$logGDP, d1$Human.Capital.Index,
+     xlab = "logGDP", ylab = "Human Capital Index")
+```
+use ggplot2
+```{r q1a-plot, echo=TRUE}
+
+ggplot(d1, aes(x=logGDP, y=Human.Capital.Index)) + 
+  geom_point() +
+  geom_point(data = subset(d1, d1$Country.Name == "Singapore"), color = "red") + 
+  theme_bw()
+
+
+```
+
+
+<p style="color:blue">
+Please type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+### Q1b) 
+Excellent. Now that you have a plot of a linear relationship, run a linear regression using `lm()`, predicting `Human Capital Index`. Run `summary(...)` on the `lm` object to produce an output table. Interpret the output of the `lm()`. What do the `b` coefficients mean? (Interpret them and try to make sense of the numbers, even if they might seem weird at first. Recall the "Negative Income" or "Negative Revenue" point in class.). 
+
+How many countries made it into this regression? (What happened to the rest?) 
+
+Comment on the goodness-of-fit statistics.
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+```{r q1b-lm, echo=TRUE}
+summary(lm(d1$Human.Capital.Index ~ d1$logGDP))
+```
+
+<p style="color:blue">
+Please type your answer here.
+</p>
+
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+
+
+
+## Tutorial 6 Question 2 
+### (To be submitted by 11 Oct 8am, 20 marks)
+
+
+
+```{r d2-read-dataset, echo=TRUE}
+d2 <- read.csv('Tutorial6_fb-regression.csv')
+```
+
+
+This question is based off a subset of the dataset collected in the following paper:
+Moro, S., Rita, P., & Vala, B. (2016). Predicting social media performance metrics and evaluation of the impact on brand building: A data mining approach. Journal of Business Research, 69, 3341-3351.
+
+Understanding what factors affect the reach of social media posts on Facebook is important for a company to plan its social media marketing strategy. This data consists of 500 posts collected from the Facebook page of a multinational cosmetics company from January to December 2014. The variables are:
+
+
+- `Category`: content of the post. There are 3 categories: "Action" (including posts about special offers and contests), "Product" (direct advertisement, explicit brand content), and "Inspiration" (non-explicit brand related content, such as inspirational quotes).
+- `Paid`: Whether the company paid Facebook to advertise this post (1 = yes)
+- `Post.Month`: The month the post was made
+- `Post.Weekday`: The day of the week the post was made
+- `Post.Hour`: The time that the post was made
+- `Lifetime.Post.Consumers`: The number of people who clicked anywhere in a post.
+- `comment`: Number of comments on the publication.
+- `like`: Number of "Likes" on the publication.
+- `share`: Number of times the publication was shared.
+- `Total.Interactions`: The sum of "likes," "comments," and "shares" of the post.
+
+
+Imagine that you are a consultant hired by the company. The company wants to maximize `Lifetime.Post.Consumers`, and so they wish to understand what factors predict it. 
+
+
+*Throughout this question (and in fact, throughout the rest of the course), you will be asked to explain your answers in simple English. Imagine you are writing back to the company that hired you. So, in addition to providing the statistical interpretation of the numbers, also provide some description of that in English.*
+
+- Example: if you regress `share` on `like` (`lm(share ~ like...)`) and you're interpreting the coefficient on `like`, say it is X.XX:
+  - Incomplete Example: "A 1-unit increase in `like` increases `share` by X.XX." (who can understand this?. You can write this, but then elaborate):
+  - Better explanation: The more people "like" the post, the more the post is shared as well. For every new like this post gets, it is also shared X.XX times.
+  - Pay attention to the units that the variables are in!
+
+
+
+
+### Q2a)
+
+Between the following variables: (`Lifetime.Post.Consumers`, `Category` and `Paid`), which would be the best choice for the dependent variable, and which would be the independent variables? Why? [3 marks]
+
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+<p style="color:blue">
+Please type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+
+
+
+### Q2b)
+
+Based on your answer to (a), you identified one dependent variable and 2 independent variables (IV)s
+
+
+
+- What kind of variable is the DV (continuous, ordinal, etc...)? How about the IVs?
+- What kind of graph would be best to show the relationship between DV and the first IV, and between DV and the second IV? (Treat these as 2 separate graphs, not on the same graph)
+- Produce these graphs and comment on them.
+
+Hint: If you choose to graph means, please add standard error bars, this is good practice. 
+- Standard error = standard deviation / sqrt(N), where N is the number of samples in that group. If you are using dplyr, the code could look like this:
+` ... %>% summarize( ... = mean(...), ... = sd(...)/sqrt(n())) %>% ... ` , as the `n()` function in a `summarize()` call would count the number in each group. (There are many ways of summarizing means so you do not *have* to use this method.)
+
+[6 points]
+
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+```{r q2b, echo=TRUE}
+
+```
+
+<p style="color:blue">
+Please type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+
+
+
+
+
+### Q2c)
+
+Make a new variable that is the base10 log of the DV. (No need to run any additional checks for normality on the new variable). Use the two IVs you identified as regressors in a linear model to predict this new transformed variable. Interpret the intercept and the coefficients. 
+
+In addition to your code, please write your answer as if you are writing to the company contact (the person that hired you). You don't have to offer prescriptions, but just say clearly in plain English what are the results of your model. [7 marks]
+
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+```{r q2c, echo=TRUE}
+
+```
+
+<p style="color:blue">
+Please type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+
+
+  
+  
+
+
+### Q2d)
+Your company contact asks you to investigate if posts made on the weekend affects the DV.
+
+- Make a new variable that indicates whether the post was made on the weekend.
+- Use this new variable in a linear model to predict the same dependent variable as in (c) (i.e., the log10 variable). 
+- Interpret the intercept and the coefficients on your variable. 
+
+Does posting the post on the weekend have an effect? Again, in addition to your code, write your answer as if you are writing to the company contact. [3 marks]
+
+
+
+
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+```{r q2d, echo=TRUE}
+
+```
+
+<p style="color:blue">
+Please type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+
+
+
+### Q2e)
+
+[1 mark for submitting a html.]
+
+
+
+
+
+******** ----------
+
+
+
+
