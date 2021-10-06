@@ -45,3 +45,12 @@ We will share the weekly notes and R codes here.
 - Testing for the equality of population means across many population groups: ANOVA
 
 
+
+### Hands-on Tutorial 06: Regression Analysis
+
+- Common Regression/Classification Models: Linear Regression and Logistic Regression
+
+- Interpretation of the summary table
+- 
+
+
