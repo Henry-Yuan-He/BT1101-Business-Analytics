@@ -51,6 +51,5 @@ We will share the weekly notes and R codes here.
 - Common Regression/Classification Models: Linear Regression and Logistic Regression
 
 - Interpretation of the summary table
-- 
 
 
