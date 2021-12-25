@@ -53,3 +53,6 @@ We will share the weekly notes and R codes here.
 - Interpretation of the summary table
 
 
+### Hands-on Tutorial 07: Time-Series
+
+
