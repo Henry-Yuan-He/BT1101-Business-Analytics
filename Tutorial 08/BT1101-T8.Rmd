@@ -1,0 +1,325 @@
+---
+title: "BT1101-Tutorial 8"
+output: html_document
+---
+
+## Submission Instructions
+
+- Select `output: html_document`.
+- Include all code chunks, so include `echo=TRUE` in all chunk headers.
+- Replace the placeholder text, "Type your answer here.", with the answer of your own.  (This is usually the descriptive and explanation part of your answer)
+- Submit **only** the required question for grading (Question 2: Submission). You can delete everything else for that submission. Remember to include any `library('package_name')` statements that you'll need to run your code and future reproduction. 
+- Rename your R Markdown file `T[X]_[MatricNumber].rmd`, and the output will automatically be `T[X]_[MatricNumber].html`.
+    - for example, `T8_12345.html`
+    - X is the Tutorial number at the top of this file. For example, this file is for "T8".
+- Submit both R Markdown file (.rmd) and HTML (.html) to Luminus for tutorial assignments (upload to Luminus under the correct Submission Folder). 
+- **It is important to be able to code and produce your Rmarkdown output file *independently*.** 
+
+## Tutorial 8: Data Mining
+
+```{r load-libraries, echo=TRUE}
+# intall required packages if you have not (suggested packages: rcompanion, rstatix, Rmisc, dplyr, tidyr, rpivotTable, knitr, psych)
+# install.packages("dplyr") #only need to run this code once to install the package
+# load required packages 
+# library("xxxx")
+
+library(tidyverse)
+library(ggplot2) 
+library(psych) # for pairs.panels()
+library(factoextra) # for fviz_cluster()
+```
+
+### Tutorial 8 Question 1
+### (To be discussed in Tutorial 8 (the week of 18 Oct - 22 Oct))
+
+- Dataset required: `Tutorial8_whiskies.csv`
+
+This will be an exploratory question using k-means clustering to examine a dataset of Whiskey Taste Indicators. The dataset can be obtained from https://outreach.mathstat.strath.ac.uk/outreach/nessie/nessie_whisky.html. 
+
+It consists of 86 (Single-Malt) Whiskies that are rated from 0-4 on 12 different taste categories: `Body`, `Sweetness`, `Smoky`, `Medicinal`, `Tobacco`, `Honey`, `Spicy`, `Winey`, `Nutty`, `Malty`, `Fruity`, `Floral`.
+
+Here's what the dataset looks like:
+
+```{r q1-read-in-dataset, echo=TRUE, fig.width=10}
+d1 = read.csv('Tutorial8_whiskies.csv', header=T)
+
+# Selecting out the independent variables "X".
+d1X <- d1 %>% select(c("Body", "Sweetness", "Smoky", "Medicinal", "Tobacco", "Honey", "Spicy", "Winey", "Nutty", "Malty", "Fruity", "Floral"))
+
+# using pairs.panel() to look at the data
+pairs.panels(d1X, lm=T)
+```
+
+The main purpose of this question is to try clustering a real dataset, and try to interpret the clusters via looking at the cluster centers (in the dimensions of the independent variables), and generating "profiles" for each cluster.
+
+
+Q1a) 
+
+Let's try clustering the different whiskies based on their taste profile. First, let's use the Elbow method to pick the best number of clusters.
+
+Using the code discussed in lecture, calculate the Within-Cluster Sum of Squares from k=2 to k=20 clusters using `d1X`, and plot the Within-Cluster Sum of Squares against number of clusters.
+
+
+
+
+
+*Note*, normally if the variables are on very different scales, we should standardize the variables (to have mean 0 and sd 1). But in this case, all the variables are on the same scale; they're all 0-4. So even if they may have different means and SDs, it's ok to NOT scale the variables. Just run kmeans on `d1X`.
+
+
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+
+```{r q1a-elbow-plot, echo=TRUE}
+
+```
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+Q1b)
+
+Hmmm it does not seem like there is a clear Elbow. The Within-Cluster Sum of Squares seem to keep decreasing, and there doesn't seem to be a clear stopping point. This may happen in real datasets (and this is a real dataset), so we may have to use our own judgment to decide on the number of clusters.
+
+
+
+Ok, let's say our local business partner applies his expert intuition, and tells us to try fitting kmeans with *3* clusters.
+
+Because the output of k-means depends upon the random initialization, we need to set the seed of the random number generator, so that all of us (students+TAs+instructors) can get the same results.
+
+<p style="color:green">**Run the following code the line before your k-means code.**</p>
+
+```
+set.seed(1)
+... = kmeans(...)
+```
+
+
+Then use the `fviz_cluster()` function from the `factoextra` package to plot the results of this clustering.
+
+What do you notice from the graph? Discuss this with your TA and fellow students. (Recall that the graph dimensions will be along the first two principal components.)
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+
+```{r q1b-viz, echo=T}
+set.seed(1)
+#... <- kmeans(...)
+
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+Q1c)
+
+Ok, let's use `<kmeans_object_name> $center` (where `<kmeans_object_name>` is the name of the kmeans model you fit above) to extract the centers of the 3 clusters.
+
+Try to interpret the clusters. I'll provide you with one observation, please generate at least four more.
+
+- I notice that Cluster 1 has the least Body compared to Clusters 2 and 3.
+- (Note: My "Cluster 1" may be your "Cluster 2"; we try to minimize this using the same seed but there still may be differences.)
+
+After generating several of these observations, try to summarize your observations into a "Taste Profile" for each Cluster. FOR EXAMPLE, is Cluster 1 high in Smoky, Tobacco-y, Spicyness?
+
+If your client really likes very rich, Smoky, Medicinal Whiskies, which cluster would you recommend to him? (e.g., if this were a real client, you could go back and look at the Distilleries in `d1` and generate a list of those in the same cluster.)
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+```{r q1c-centers, echo=TRUE}
+
+```
+
+
+<p style="color:blue">
+Type your answer here
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+
+
+
+
+
+## Tutorial 8 Part 2: For Submission
+## Question 2 
+### (To be submitted by 25 Oct 8am, 20 marks)
+
+
+This dataset is publically available from: https://www.kaggle.com/fedesoriano/company-bankruptcy-prediction which in turn was taken from https://archive.ics.uci.edu/ml/datasets/Taiwanese+Bankruptcy+Prediction and based off the following paper:
+
+Liang, D., Lu, C.-C., Tsai, C.-F., and Shih, G.-A. (2016) Financial Ratios and Corporate Governance Indicators in Bankruptcy Prediction: A Comprehensive Study. European Journal of Operational Research, vol. 252, no. 2, pp. 561-572.
+https://www.sciencedirect.com/science/article/pii/S0377221716000412
+
+The data consists of measurements of companies on the Taiwan Stock Exchange from 1999 to 2009, and includes a variable to define if the company went bankrupt or not. Here we'll practice our data mining skills by building a simple model to predict whether a company would go bankrupt.
+
+*(I apologize if there are slight errors in the variable definitions; I'm not a finance professor, so I'm just using my judgment and common-sense.)
+
+
+```{r read-in-data, echo=T, eval=T}
+
+#### Prof's code for doing stratified partitioning with the data (i.e., making sure there is an equal positive/negative ratio across the Train and Test splits)
+#### the idea is to sample the Train/Test values separately for positive cases, and for negative cases. This should minimize the imbalance.
+## set.seed(1) # for reproducibility.
+## d2 <- read.csv("Tutorial8_bankruptcy.csv") %>% 
+##   group_by(Bankrupt.) %>%
+##   mutate(partition = sample(c("Train", "Test"), size=n(), replace=T, prob=c(.7, .3))) %>% ungroup() %>% relocate(partition) %>%
+##   write.csv("Tutorial8_bankruptcy.csv", row.names=F)
+
+
+
+d2 <- read.csv("Tutorial8_bankruptcy.csv") %>% 
+  select(partition, Bankrupt., ROA.A..before.interest.and...after.tax, Cash.flow.rate, Net.Value.Per.Share..A., Cash.Flow.Per.Share, Debt.ratio.., Operating.profit.Paid.in.capital, Working.Capital.to.Total.Assets)
+```
+
+
+The dataset has many variables, but we'll be picking just 8 variables, in addition to the Bankrupt? variable, which is read into R as `Bankrupt.`
+
+- `Bankrupt.`: Class label; 1 if the company went bankrupt, 0 if not
+- `ROA.A..before.interest.and...after.tax`: Return On Total Assets, before interest and after tax, in %
+- `Cash.flow.rate`: Rate of cash flow.
+- `Net.Value.Per.Share..A.`: Book Value Per Share A. (i.e., price of each share)
+- `Cash.Flow.Per.Share`: Cash flow per Share A.
+- `Debt.ratio..`: Liability divided by Total Assets (as a %)
+- `Operating.profit.Paid.in.capital`: Operating Profit divided by Capital 
+- `Total.Asset.Turnover`: Total Asset Turnover
+- `Working.Capital.to.Total.Assets`: Ratio of Working Capital to Total Assets
+
+
+- in addition, there is a `partition` variable that indicates a Training (70%) / Testing 30% split which you will find useful from Q2c onwards.
+
+### Q2a)
+
+The original dataset has 95 independent variables, which may seem like a lot. But if we zoom in further and take a look at the first few independent variables of the original dataset, they include this group of variables:
+
+- Operating Gross Margin: Gross Profit divided by Net Sales
+- Realized Sales Gross Margin: Realized Gross Profit divided by Net Sales
+
+and here's another group:
+
+- Operating Profit Rate: Operating Income divided by Net Sales
+- Pre-tax net Interest Rate: Pre-Tax Income divided by Net Sales
+- After-tax net Interest Rate: Net Income divided by Net Sales
+
+If you notice, these variables seem quite similar to each other (within the same group), and they may differ only by a little amount because of the way they are defined. What is an issue that we learnt about in class that could occur if say, we put all of these variables into a logistic regression model to predict Bankruptcy?
+
+(This happens often in real-world datasets. If you're interested you can take a look at the entire dataset by reading in the datafile without the "select()" command, and examine those variables further. There are a lot more of these similar variables in the dataset. You may also go to the original URL for the full description of the variables). 
+
+[3 marks]
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+
+
+
+### Q2b)
+
+Examine the Bankrupt variable. How many positive instances are there, compared to negative instances? If I built a model that predicted all "Not Bankrupt" (0), what would its accuracy be?
+
+Thus, if someone told you that they built a model that achieved **92% accuracy** on this dataset, would you be impressed? Why or why not?
+
+*Note, this is something we see quite commonly in real-life datasets, where the dataset is imbalanced with respect to the positive and negative instances. (This gives some problems with training models, which we have to be careful with). This is also why when we make train/test splits we need to make sure the ratio is equal across the train and test partitions, known as stratified sampling.
+
+[5 marks]
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+
+
+
+### Q2c)
+
+Taking the subset of the variables that we've helped you to extract, please run a Principal Component Analysis on the independent variables, using `prcomp(..., center=T, scale=T)`  
+
+- How many principal components are needed to explain >80% of the variance in the data? Let's call this number **X**
+
+Let's use these **X** principal components as regressors to predict Bankruptcy.
+
+- First, make new variables in your data frame that correspond to these **X** principal components. You can use this following code chunk to get the first PC.
+
+```
+df <- df %>% mutate(
+  pc1 = <PCA OBJECT>$x[,"PC1"], ...
+)
+```
+
+- Next, split your dataset into Train and Test sets. That is, create one data frame that contains only the observations for which `partition` is `Train`. And then create another for `Test`.
+- Finally, using the Training set only, fit a logistic regression to classify the companies into Bankrupt vs not.
+
+
+[5 marks]
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+
+
+
+
+### Q2d)
+
+Finally, let's check out the performance of our classification model on the Test set. Use
+```
+predict( GLM_OBJECT , DATA_FRAME , type="response")
+```
+to predict the `probabilities` of the classes. (Note, if you don't specify `type="response"`, predict will return the value of the link function (i.e., the logits). `type="response"` will return probabilities).
+
+- Store the probabilities back into the Test set.
+- Round off the probabilities, such that if p>=0.5, the predicted class is "1" (Bankrupt), but if p<.5, the predicted class is "0" (not bankrupt).
+- Now, compare your model's predicted class with the true class. 
+
+- What is the classification accuracy of your model?
+- What is the precision?
+- What is the recall? 
+- What is the F1-score?
+
+Note: don't worry if the accuracy is not higher than what you wrote about in (a). It's difficult to train a good model for very imbalanced datasets! And you can see why accuracy is not the only metric we should be looking at.
+
+[6 marks]
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+
+
+
+
+

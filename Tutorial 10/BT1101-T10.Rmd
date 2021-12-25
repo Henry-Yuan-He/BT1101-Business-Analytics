@@ -1,0 +1,268 @@
+---
+title: "BT1101-Tutorial 10"
+output: html_document
+---
+
+## Submission Instructions
+
+- Select `output: html_document`.
+- Include all code chunks, so include `echo=TRUE` in all chunk headers.
+- Replace the placeholder text, "Type your answer here.", with the answer of your own.  (This is usually the descriptive and explanation part of your answer)
+- Submit **only** the required question for grading (Question 2: Submission). You can delete everything else for that submission. Remember to include any `library('package_name')` statements that you'll need to run your code and future reproduction. 
+- Rename your R Markdown file `T[X]_[MatricNumber].rmd`, and the output will automatically be `T[X]_[MatricNumber].html`.
+    - for example, `T10_12345.html`
+    - X is the Tutorial number at the top of this file. For example, this file is for "T10".
+- Submit both R Markdown file (.rmd) and HTML (.html) to Luminus for tutorial assignments (upload to Luminus under the correct Submission Folder). 
+- **It is important to be able to code and produce your Rmarkdown output file *independently*.** 
+
+## Tutorial 10: Linear Optimization
+
+```{r load-libraries, echo=TRUE}
+# intall required packages if you have not (suggested packages: rcompanion, rstatix, Rmisc, dplyr, tidyr, rpivotTable, knitr, psych)
+# install.packages("dplyr") #only need to run this code once to install the package
+# load required packages 
+# library("xxxx")
+
+library(lpSolve)
+```
+
+
+Please use the following table template for any question you feel it is useful, which comes from the Parsnips and Kale example in lecture. This table should exist OUTSIDE any `r` code chunks in order to format properly (since it's markdown and not R). Here, we use a pair of '\$'s to enter/exit math mode (this is LaTeX, for those of you who are familiar), which allows us to type symbols like $X_1$, $\leq$ for the "less than or equals" sign and $\geq$ for the "greater than or equals" sign. Use $\,$ (thin space), $\;$ (medium space), $\quad$ (large space, equivalent to curent font size), $\qquad$ (two large spaces) for spacing, so you can leave a blank for decision variables with coefficients of 0. 
+(Note: don't put two \$'s next to each other. Always put a space in between.). 
+
+Maximize total profit using decision variables $X_1$, $X_2$ | Profit = 0.15 $X_1$ + 0.40 $X_2$
+--- | --- 
+Subject to |  
+Budget Constraint | 0.20$X_1$ + 0.70$X_2$ $\leq$ 100
+Space Constraint | $X_1$ + $X_2$ $\leq$ 200
+Non-Negativity Constraint 1 | $X_1$ + $\quad$ $\geq$ 0
+Non-Negativity Constraint 2 | $\quad$ + $X_2$ $\geq$ 0
+
+You may also refer to: https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#tables for additional information regarding table formatting. From the professor's experience, it takes a while to get used to making tables in Markdown, and even minor changes may break the table. The most common mistakes are: 
+
+- not having a blank line before and a blank line after each table, 
+- not having the correct number of \|'s, 
+- not ending Math mode correctly, and 
+- putting two \$s next to each other. 
+
+
+
+### Tutorial 10 Question 1
+### (To be discussed in Tutorial 10 (the week of 1 Nov - 5 Nov))
+
+
+The examples we discussed in lecture were all maximization problems (specifically, to maximize profit). In this question we shall explore minimisation.
+
+
+1a) FunToys is famous for three types of toys: Cars, Animals, and Robots. Each year, near the holiday season, it receives large bulk orders for these items. To meet these orders, FunToys operates three small toy-making factories, A, B and C. 
+
+- Factory A costs \$1000 per day to operate, and can produce 30 cars, 20 animals and 30 robots per day.
+- Factory B costs \$1200 per day to operate, and can produce 40 cars, 50 animals and 10 robots per day.
+- Factory C costs \$1500 per day to operate, and can produce 50 cars, 40 animals and 15 robots per day.
+
+This Christmas, FunToys is required to deliver 5000 cars, 3000 animals and 2500 robots. You are tasked with finding out what is the most cost-efficient way to meet the order.
+
+In this question, please *IGNORE* integer requirements, i.e., just use fractional answers if/when they come up.
+
+
+Let us start by trying to formulate this as a optimisation problem. 
+
+- Hint: First, write down what you want to minimize.
+- Second, write down your decision variables. What are you actually choosing?
+- Third, write your objective function in terms of your decision variables.
+- Fourth, write down the constraints: what are the contractual requirements you need to fulfill. What other constraints are there? Write them down in terms of your decision variables.
+- Summarize them nicely in a table.
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+<p style="color:blue">
+Please type your answers here
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+1b) Write code to solve this optimisation problem. Report the optimal solution, and the value of the objective function at that solution. Interpret the solution: what do these numbers mean? (again, please ignore any integer requirements and just report fractional answers if they appear)
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+
+<p style="color:blue">
+Please type your answers here
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+1c) What if we impose an additional constraint that FunToys only has 60 days to complete the order? (Note that we can run all three factories *simultaneously*). What happens now?
+
+Re-produce a new table summarizing the optimisation problem (including the existing and new constraints), and write R code to solve it. What is the new solution, and what is the objective function value?
+
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+<p style="color:blue">
+Please type your answers here
+</p>
+
+
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+1d) For the solution in 1c, which of the constraints are binding, and which are non-binding?
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+<p style="color:blue">
+Please type your answers here
+</p>
+
+
+
+
+
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+1e) Using your solution in 1c, print out the Shadow Prices. Interpret these values -- make sure you can explain why each shadow price is zero or why it is positive/negative! Your answer from part d) should also help you explain. (Note again, that we IGNORE integer requirements in this question, so your $X$ variables can be fractional...)
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+<p style="color:blue">
+Please type your answers here
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+
+
+
+
+
+
+## Tutorial 10 Part 2: For Submission
+## Question 2 
+### (To be submitted by 8 Nov 8am, 20 marks)
+
+
+You have just been hired by Charlie and Keisha, an up-and-coming hand-wear brand. They are most famous for three products: (i) fashion gloves, (ii) winter gloves, and (iii) work gloves. 
+
+- Fashion gloves cost \$15 to make, takes up 0.15 cubic-meters of space, and are sold for \$45.
+- Winter gloves cost \$20 to make, takes up 0.35 cubic-meters of space, and are sold for \$70.
+- Work gloves cost \$45 to make, takes up 0.25 cubic-meters of space, and are sold for \$135.
+
+The company has \$8,000 of capital to make this next batch of products, and their store has 1,000 cubic-meters of storage space. The company also wants to ensure at least 300 pieces of each product.
+
+PLEASE IGNORE ALL INTEGER CONSTRAINTS IN THIS QUESTION.
+
+
+#### Q2a) 
+
+The company wants you to recommend how many of each type of gloves they should make, in order to maximize *profits* (revenue - costs).
+
+Are there any feasible solutions, and if so, what is the optimal solution, and what is the profit associated with this solution? 
+
+
+[3 points]
+
+
+
+
+
+
+#### Q2b) 
+
+Your company contact gets in touch with you and says "oops, sorry, I made a typo in our last correspondence. We are supposed to have \$80,000 in capital, not \$8,000". 
+
+Now with this updated constraint, please solve this optimization problem. Please show your working (as we usually do). Write out clearly all the decision variables, objective function and constraints (using the table template provided above). Please include the non-negativity constraints.
+
+What is the optimal profit, and what is the optimal product mix?
+
+Finally, in addition to providing your code, please write your recommendation as if you are writing to the company contact. 
+
+
+[10 marks]
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+<p style="color:blue">
+Please type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+
+
+
+
+
+
+
+#### Q2c) 
+In addition to the recommendation you wrote in (b), you also remembered that you are an expert in interpreting shadow prices. 
+
+- Print out the shadow prices of your solution from (b). 
+- Please interpret each and every one of the values. Also include a discussion of which constraints are binding.
+
+In addition to providing your code, remember to write your answer as if you are addressing the company contact. 
+
+[4 marks]
+
+
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+<p style="color:blue">
+Please type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+
+
+#### Q2d)  
+Your company contact is not satisfied with your answer from (b). Their Fashion Gloves are their flagship product, are made with their patented Feel-Shiok-a material, and are cool enough to be worn in tropical Singapore. They want to sell more of these in the market, but your solution from (b) suggests a low number of Fashion Gloves. 
+
+Can you identify why your solution suggests a low number of fashion gloves? And could you recommend them something that they can do to make it optimal to produce more Fashion Gloves?
+
+In addition to providing your code, remember to write your answer as if you are addressing the company contact. 
+
+
+[2 marks]
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+<p style="color:blue">
+Please type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+
+
+### Q2e)
+
+[1 mark for submitting a html.]
+
+
+
+
+
+******** ----------
+
+
+
+
+
+
+
